@@ -10,6 +10,8 @@ import 'lib-flexible'
 import router from './router'
 // 导入axios
 import axios from 'axios'
+//导入vuex
+import store from './store'
 
 // -------------------------全局注册组件-------------------------------
 import HmHeader from './components/HmHeader'
@@ -48,7 +50,7 @@ import {
   List,
   Tab,
   Tabs,
-  PullRefresh
+  PullRefresh,
 } from 'vant'
 Vue.use(Button)
 Vue.use(Field)
@@ -73,7 +75,7 @@ axios.defaults.baseURL = 'http://localhost:3000'
 
 // 配置axios的响应拦截器，，，，所有的axios的响应会先经过响应拦截器
 // 可以在响应拦截器中对响应做一些通用的处理
-axios.interceptors.response.use(function(res) {
+axios.interceptors.response.use(function (res) {
   // 拦截器会拦截所有的请求的响应，返回拦截到的res
   // console.log('拦截到了res', res)
   // 通用对token失效进行处理
@@ -94,7 +96,7 @@ axios.interceptors.response.use(function(res) {
 })
 
 // axios的请求拦截器，所有的axios的请求都会先经过axios的请求拦截器
-axios.interceptors.request.use(function(config) {
+axios.interceptors.request.use(function (config) {
   // console.log('所有的请求杯拦截le ', config)
   // 统一的给请求添加token
   const token = localStorage.getItem('token')
@@ -109,13 +111,13 @@ Vue.prototype.$axios = axios
 
 // -----------------------全局过滤器=---------------------------------
 import moment from 'moment'
-Vue.filter('date', function(input, format = 'YYYY-MM-DD') {
+Vue.filter('date', function (input, format = 'YYYY-MM-DD') {
   return moment(input).format(format)
 })
 
 // 格式化时间，需要显示 2小时前  1小时前
 // 如果日期超过一天，直接显示具体的时间， 如果日期小于1天，显示成 多少小时前
-Vue.filter('date2', function(input) {
+Vue.filter('date2', function (input) {
   const d = new Date(input)
   const now = new Date()
   const hour = ((now - d) / 1000 / 60 / 60) | 0
@@ -132,5 +134,6 @@ Vue.config.productionTip = false
 
 new Vue({
   router,
-  render: h => h(App)
+  store,
+  render: (h) => h(App),
 }).$mount('#app')

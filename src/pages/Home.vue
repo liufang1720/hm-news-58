@@ -66,6 +66,7 @@ export default {
   //勾子函数,拿tab栏数据渲染
   async created() {
     //从本地拿缓存的数据 如果本地有数据 就渲染本地的数据 没有的话 在发请求拿数据
+    console.log('home组件创建')
     const activeTabs = JSON.parse(localStorage.getItem('activeTabs'))
     if (activeTabs) {
       this.tabList = activeTabs
@@ -79,6 +80,9 @@ export default {
       this.tabList = data
       this.getPostList(this.tabList[this.active].id)
     }
+  },
+  destroyed() {
+    console.log('home组件被销毁了')
   },
   //方法
   methods: {
@@ -136,6 +140,16 @@ export default {
       const id = this.tabList[value].id
       this.getPostList(id)
     }
+  },
+  //在home组件中离开home组件的时候判断，是否是进入详情页
+  //如果是，继续缓存home，如果不是，不缓存home
+  beforeRouteLeave(to, from, next) {
+    console.log('我要离开home组建')
+    if (to.name !== 'post-detail') {
+      // 离开home组件，但是不去详情页，就不该缓存home组件
+      this.$store.commit('uncache', 'home')
+    }
+    next()
   }
 }
 </script>

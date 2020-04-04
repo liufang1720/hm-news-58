@@ -13,6 +13,7 @@ import Home from '../pages/Home.vue'
 import PostDetail from '../pages/PostDetail.vue'
 import TabEdit from '../pages/TabEdit.vue'
 import Search from '../pages/Search.vue'
+import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -21,7 +22,7 @@ const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location, onResolve, onReject) {
   if (onResolve || onReject)
     return originalPush.call(this, location, onResolve, onReject)
-  return originalPush.call(this, location).catch(err => err)
+  return originalPush.call(this, location).catch((err) => err)
 }
 
 const router = new VueRouter({
@@ -30,60 +31,60 @@ const router = new VueRouter({
     {
       path: '/',
       component: Home,
-      name: 'home'
+      name: 'home',
     },
     // 命名路由：给每一个路由规则起一个名字，指定name即可。
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
     },
     {
       path: '/register',
       name: 'register',
-      component: Register
+      component: Register,
     },
     {
       path: '/user',
       component: User,
-      name: 'user'
+      name: 'user',
     },
     {
       path: '/edit',
       component: Edit,
-      name: 'edit'
+      name: 'edit',
     },
     {
       path: '/my-follow',
       component: MyFollow,
-      name: 'my-follow'
+      name: 'my-follow',
     },
     {
       path: '/my-comments',
       component: MyComments,
-      name: 'my-comments'
+      name: 'my-comments',
     },
     {
       path: '/my-star',
       component: MyStar,
-      name: 'my-star'
+      name: 'my-star',
     },
     {
       path: '/post-detail/:id',
       component: PostDetail,
-      name: 'post-detail'
+      name: 'post-detail',
     },
     {
       path: '/tab-edit',
       component: TabEdit,
-      name: 'tab-edit'
+      name: 'tab-edit',
     },
     {
       path: '/search',
       component: Search,
-      name: 'search'
-    }
-  ]
+      name: 'search',
+    },
+  ],
 })
 
 // 注册全局的导航守卫
@@ -97,10 +98,16 @@ const router = new VueRouter({
 
 // 需要授权的路径，需要登录才能访问的路径
 const authUrl = ['/user', '/edit', '/my-follow', '/my-comments', '/my-star']
-router.beforeEach(function(to, from, next) {
+router.beforeEach(function (to, from, next) {
   // console.log('to', to)
   // console.log('from', from)
   // console.log('所有的路由的跳转都必须先经过导航守卫')
+  //在导航守卫中, 判断是否是进入home组件，如果进入的是home组件，我们就把home组件缓存起来。
+  if (to.name === 'home') {
+    // 进入的是首页, 需要缓存home组件
+    store.commit('cache', 'home')
+  }
+
   const token = localStorage.getItem('token')
   // // 如果去个人中心,必须要登录
   if (authUrl.includes(to.path)) {
@@ -114,7 +121,7 @@ router.beforeEach(function(to, from, next) {
       // next('/login')
       // 如果没有登录，不推荐使用 next('/login') 使用 router.push('/login')
       router.push({
-        name: 'login'
+        name: 'login',
       })
     }
   } else {
